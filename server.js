@@ -4,6 +4,11 @@ var express = require('express'),
   port = process.env.PORT || 5000,
   io = require('socket.io').listen(app);
 
+io.configure(function () { 
+  io.set("transports", ["xhr-polling"]); 
+  io.set("polling duration", 10); 
+});
+
 app.configure(function() {
     app.set('view options', {
 	layout : false
