@@ -19,9 +19,9 @@ $(document).ready(function() {
   $conversation.hide();
 	
   socket.on('connect', function() {
-			console.log('Connected with socket');
-			init();
-	});
+    console.log('Connected with socket');
+    init();
+  });
 
   socket.on('connected_with', function(other_nickname) {
     setChatWithOther(other_nickname);
@@ -33,7 +33,7 @@ $(document).ready(function() {
 
   socket.on('new_user', function(origin, new_nickname) {
     if (origin === 'SERVER') {
-        appendNick(new_nickname);
+      appendNick(new_nickname);
     }
   });
 
@@ -51,22 +51,22 @@ $(document).ready(function() {
     });
   };
 
-	var init = function() {
-		setKeyListener($nickname, setNickname);
-	};
-	
-	var setNickname = function(nickname) {
-		socket.emit('set_nickname', nickname, function(is_available) {
-			if (is_available) {
-				console.log('Nickname ' + nickname + ' is available');
+  var init = function() {
+    setKeyListener($nickname, setNickname);
+  };
+  
+  var setNickname = function(nickname) {
+    socket.emit('set_nickname', nickname, function(is_available) {
+      if (is_available) {
+	console.log('Nickname ' + nickname + ' is available');
         my_nickname = nickname;
         $my_nickname.text(my_nickname);
-				setUpRoom();
-			} else {
-			 $error_paragraph.text("Not available. Choose another");
-			}
-		});
-	};
+	setUpRoom();
+      } else {
+	$error_paragraph.text("Not available. Choose another");
+      }
+    });
+  };
     
   var setUpRoom = function() {
     socket.emit('get_users', function(users) {
