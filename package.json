@@ -1,0 +1,13 @@
+{
+  "name": "onyxia",
+  "preferGlobal": true,
+  "version": "0.1.0",
+  "dependencies" : {
+    "express"   :  "2.x.x",
+    "socket.io" :  "*",
+    "jade"      :  "*"
+  },
+  "engines": {
+    "node": "*"
+  }
+}
