@@ -1,8 +1,9 @@
 var express = require('express'),
-  app = express.createServer(),
+  app = express(),
   http = require('http'),
+  server = http.createServer(app),
   port = process.env.PORT || 5000,
-  io = require('socket.io').listen(app);
+  io = require('socket.io').listen(server);
 
 io.configure(function () { 
   io.set("transports", ["xhr-polling"]); 
@@ -21,6 +22,6 @@ app.get('/', function(request, response) {
 
 });
 
-app.listen(port);
+server.listen(port);
 console.log("Server started on port %s", port);
 require('./io')(io);
