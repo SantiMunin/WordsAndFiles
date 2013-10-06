@@ -1,10 +1,18 @@
+/* This is not a good way to do this */
+.vertical-centering {
+    position: absolute;
+    top: 40%;
+    left: 40%;
+}
+
+.horizontal-centering {
+    width: 40%;
+    margin: 0 auto;
+}
+
 #login {
 	height: 20%;
 	width: 25%;
-	margin: 0 auto;
-	position: absolute;
-	top: 40%;
-	left: 40%;
 }
 
 #signin {
@@ -18,5 +26,9 @@
 
 #login-error {
     display: none;
+}
+
+#room {
+    width: 200px;
 }
 

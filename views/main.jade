@@ -1,19 +1,16 @@
 extends layout
 
 block content
-    div#login
+    div.vertical-centering.horizontal-centering#login
         form#login-form
             div#login-error.alert.alert-danger.clear
             label Nickname
             input.form-control#nickname
             button.btn.btn-success#signin Sign In
             
-
-    div#room
+    div.horizontal-centering#room
         h1#my_nickname
-        ol#users
-        p TalkWith
-            input#chat_with
+        div.list-group#users
 
     div#conversation
         p#other_user

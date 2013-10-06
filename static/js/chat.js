@@ -71,7 +71,7 @@ $(document).ready(function() {
         $my_nickname.text(my_nickname);
         setUpRoom();
       } else {
-        $error_paragraph.text("Not available. Choose another");
+        showError("Not available. Choose another.");
       }
     });
     return false;
@@ -134,10 +134,16 @@ $(document).ready(function() {
   };
 
   var appendNick = function(nickname) {
+    console.log("Trying to append: " +nickname);
     if (nickname !== my_nickname) {
-      $users.append($("<li>@" + nickname + "</li>"));
+      var $link = $('<a href="#" class="list-group-item"></a>');
+      $link.text(nickname);
+      $link.click(function() {
+        connectWith(nickname);
+      });
+      $users.append($link);
     }
-  }
+  };
 
   var appendMessage = function(nickname, message) {
     $messages.append("<li>"+ nickname + ": " + message + "</li>");
