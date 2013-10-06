@@ -98,6 +98,7 @@ $(document).ready(function() {
       } else {
         for (var client in users) {
           console.log(users[client]);
+          clearNickList();
           appendNick(users[client]);
         }
       }
@@ -160,6 +161,10 @@ $(document).ready(function() {
         console.error("Message could not be sent");
       }
     });
+  };
+
+  var clearNickList = function() {
+    $users.empty();
   };
 
   var appendNick = function(nickname) {
