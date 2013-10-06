@@ -3,53 +3,57 @@ module.exports = function(io) {
 	var people = {};
 
 	io.sockets.on('connection', function(socket) {
-		console.log('Client connected');
-		
-		socket.on('set_nickname', function(nickname, callback) {
-			console.log('Trying to set nickname ' + nickname);
-			
-			var nickAvailable = isNicknameAvailable(nickname);
-			if (nickAvailable) {
-				people[nickname] = "";
-				socket.nickname = nickname;
-			}
-			callback(nickAvailable);
-			
-			sendMessage('new_user', 'SERVER', nickname);
-		});
+	  console.log('Client connected');
+	  
+	  socket.on('set_nickname', function(nickname, callback) {
+	    console.log('Trying to set nickname ' + nickname);
+	    
+	    var nickAvailable = isNicknameAvailable(nickname);
+	    if (nickAvailable) {
+	      people[nickname] = "";
+	      socket.nickname = nickname;
+	    }
+	    callback(nickAvailable);
+	    
+	    sendMessage('new_user', 'SERVER', nickname);
+	  });
+	  
+	  socket.on('get_users', function(callback) {
+            users = getClients();
+            callback(users);
+            sendMessage('SERVER', "Found users");
+	  });
 
-		socket.on('get_users', function(callback) {
-        	users = getClients();
-        	callback(users);
-        	sendMessage('SERVER', "Found users");
-		});
+	  socket.on('connect_me_with', function(source, target, callback) {
+	    if (people[source] !== "" || people[target] !== "" || source === target) {
+	      callback(false);
+	    }  else {
+	      other_socket = findSocket(target);
+	      other_socket.emit('connection_request', source, function (ok) {
+		if (ok) {
+		  console.log("cannection succesfull between " + source + " - " + target);
+		  people[source] = target;
+                  people[target] = source;
+		  callback(true);
+		} else {
+		  callback(false);
+		}
+	      });
+	    }
+	  });
 
-		socket.on('connect_me_with', function(source, target, callback) {
-			if (people[source] !== "" || people[target] !== "" || source === target) {
-				callback(false);
-			}  else {
-				people[source] = target;
-				people[target] = source;
-				callback(true);
-				other_socket = findSocket(target);
-				other_socket.emit('connected_with', source);
-			}
-		});
-
-		socket.on('send_message_to', function(nickname, message, callback) {
-				callback(sendMessageToOther(nickname, message));
-			}
-		);
-		
-		socket.on('message', function(message) {
-			sendMessage(socket.nickname, message);
-		});
-		
-		socket.on('disconnect', function() {
-			people[socket.nickname] = undefined;
-			sendMessage('disconnected_user', 'SERVER', socket.nickname);
-		});
-	        
+	  socket.on('send_message_to', function(nickname, message, callback) {
+	    callback(sendMessageToOther(nickname, message));
+	  });
+	  
+	  socket.on('message', function(message) {
+	    sendMessage(socket.nickname, message);
+	  });
+	  
+	  socket.on('disconnect', function() {
+	    people[socket.nickname] = undefined;
+	    sendMessage('disconnected_user', 'SERVER', socket.nickname);
+	  });  
 	});
 
 	var sendMessage = function(subject, nickname, message) {

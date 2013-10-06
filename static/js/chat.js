@@ -2,7 +2,7 @@ $(document).ready(function() {
 	
   var $login = $("#login"),
       $nickname = $("#nickname"),
-		  $room = $("#room"),
+      $room = $("#room"),
       $conversation = $('#conversation'),
       $users = $('#users'),
       $chat_with = $('#chat_with'),
@@ -11,20 +11,26 @@ $(document).ready(function() {
       $message = $('#new_message'),
       $my_nickname = $('#my_nickname'),
       $error_paragraph = $('#error'),
-	    socket = io.connect('/'),
+      $other_nickname = $('#other_nickname'),
+      $connect = $('#connect'),
+      $request = $('#request'),
+      $button_accept = $('#accept'),
+      $button_deny = $('#deny')
+      socket = io.connect('/'),
       other_nickname,
       my_nickname;
 
   $room.hide();
   $conversation.hide();
+  $request.hide();
 	
   socket.on('connect', function() {
     console.log('Connected with socket');
     init();
   });
 
-  socket.on('connected_with', function(other_nickname) {
-    setChatWithOther(other_nickname);
+  socket.on('connection_request', function(other_nickname, callback) {
+    connectionRequest(other_nickname, callback);
   });
 
   socket.on('new_message', function(message) {
@@ -79,7 +85,25 @@ $(document).ready(function() {
       $room.show();
       setKeyListener($chat_with, connectWith); 
     }); 
-	};	
+  };	
+  
+  var connectionRequest = function(other_nickname, callback) {
+    $room.hide();
+    $request.show();
+    $other_nickname.text(other_nickname);
+
+    $button_accept.click( function () {
+      callback(true);
+      $request.hide();
+      setChatWithOther(other_nickname);
+    });
+			  
+    $button_deny.click( function () {
+      callback(false);
+      $request.hide();
+      setUpRoom();
+    });
+  };
 
   var connectWith = function(other_nickname) {
     socket.emit('connect_me_with', my_nickname, other_nickname, function(ok) {
