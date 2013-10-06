@@ -29,6 +29,17 @@
 }
 
 #room {
+    width: 500px;
+}
+
+#room a {
     width: 200px;
 }
 
+#users {
+    margin: 20px 0;
+}
+
+#no-users-alert {
+    display : none;
+}

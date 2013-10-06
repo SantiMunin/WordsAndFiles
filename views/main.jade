@@ -4,14 +4,15 @@ block content
 
     div.vertical-centering.horizontal-centering#login
         form#login-form
-        div#login-error.alert.alert-danger.clear
-        label Nickname
-                input.form-control#nickname
-                button.btn.btn-success#signin Sign In
+            div#login-error.alert.alert-danger.clear
+            label Nickname
+            input.form-control#nickname
+            button.btn.btn-success#signin Sign In
 
     div.horizontal-centering#room
-            h1#my_nickname
+            h1#room_heading
             div.list-group#users
+            div.alert.alert-warning#no-users-alert You are alone. Maybe wait for a while?
             
     div#request
         h1 Do you want to connect with 
@@ -20,7 +21,7 @@ block content
         button.btn.btn-danger#deny No
         
 
-        div#conversation
+    div#conversation
         p#other_user
             ol#messages
             p New message

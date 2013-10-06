@@ -12,12 +12,13 @@ $(document).ready(function() {
       $other_user = $('#other_user'),
       $messages = $('#messages'),
       $message = $('#new_message'),
-      $my_nickname = $('#my_nickname'),
+      $room_heading = $('#room_heading'),
       $other_nickname = $('#other_nickname'),
       $connect = $('#connect'),
       $request = $('#request'),
       $button_accept = $('#accept'),
       $button_deny = $('#deny'),
+      $no_users_alert = $('#no-users-alert'),
       socket = io.connect('/'),
       other_nickname = undefined,
       my_nickname = undefined;
@@ -41,6 +42,7 @@ $(document).ready(function() {
 
   socket.on('new_user', function(origin, new_nickname) {
     if (origin === 'SERVER') {
+      $no_users_alert.hide();
       appendNick(new_nickname);
     }
   });
@@ -73,8 +75,7 @@ $(document).ready(function() {
       if (is_available) {
         console.log('Nickname ' + nickname + ' is available');
         my_nickname = nickname;
-        $my_nickname.text(my_nickname);
-        setUpRoom();
+        setUpRoom(nickname);
       } else {
         showError("Not available. Choose another.");
       }
@@ -87,13 +88,18 @@ $(document).ready(function() {
     $error.text(error);
   };
     
-  var setUpRoom = function() {
+  var setUpRoom = function(nickname) {
+    $room_heading.text("Chat room - Logged as: " + nickname);
     socket.emit('get_users', function(users) {
       console.log("Received " + users);
       $login.hide();
-      for (var client in users) {
-        console.log(users[client]);
-        appendNick(users[client]);
+      if (users.length < 2) {
+        $no_users_alert.show();
+      } else {
+        for (var client in users) {
+          console.log(users[client]);
+          appendNick(users[client]);
+        }
       }
       $room.show();
     });
@@ -109,7 +115,7 @@ $(document).ready(function() {
       $request.hide();
       setChatWithOther(other_nickname);
     });
-    
+
     $button_deny.click( function () {
       callback(false);
       $request.hide();
