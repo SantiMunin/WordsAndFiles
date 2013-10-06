@@ -1,26 +1,28 @@
 extends layout
 
 block content
-	div#login
-		p Nickname
-			input#nickname
-		p#error
-			
-	div#room
-		h1#my_nickname
-		ol#users
-		p TalkWith
-			input#chat_with
+
+	div.vertical-centering.horizontal-centering#login
+        form#login-form
+		div#login-error.alert.alert-danger.clear
+ 		label Nickname
+            	input.form-control#nickname
+            	button.btn.btn-success#signin Sign In
+
+	div.horizontal-centering#room
+	        h1#my_nickname
+        	div.list-group#users
+    		
 	div#request
 		h1 Do you want to connect with 
 		h1#other_nickname?
 		button.btn.btn-success#accept Yes 
 		button.btn.btn-danger#deny No
-				
+        
 
-	div#conversation
+    	div#conversation
 		p#other_user
-		ol#messages
-		p New message
-			input#new_message
-	
+        	ol#messages
+        	p New message
+            	      input#new_message
+    

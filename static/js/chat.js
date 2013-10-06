@@ -1,7 +1,10 @@
 $(document).ready(function() {
-	
+  
   var $login = $("#login"),
       $nickname = $("#nickname"),
+      $nickname_button = $("#signin"),
+      $login_form = $("#login-form"),
+      $error = $("#login-error");
       $room = $("#room"),
       $conversation = $('#conversation'),
       $users = $('#users'),
@@ -10,15 +13,14 @@ $(document).ready(function() {
       $messages = $('#messages'),
       $message = $('#new_message'),
       $my_nickname = $('#my_nickname'),
-      $error_paragraph = $('#error'),
       $other_nickname = $('#other_nickname'),
       $connect = $('#connect'),
       $request = $('#request'),
       $button_accept = $('#accept'),
       $button_deny = $('#deny')
       socket = io.connect('/'),
-      other_nickname,
-      my_nickname;
+      other_nickname = undefined;,
+      my_nickname = undefined;
 
   $room.hide();
   $conversation.hide();
@@ -46,7 +48,7 @@ $(document).ready(function() {
   socket.on('disconnected_user', function(nickname) {
     console.log(nickname + "disconnected.");
   });
-	
+  
   var setKeyListener = function(element, callback) {
     element.keyup(function(e) {
       var code = e.which || e.keyCode;
@@ -58,32 +60,42 @@ $(document).ready(function() {
   };
 
   var init = function() {
-    setKeyListener($nickname, setNickname);
+    $login_form.submit(setNickname);
   };
   
-  var setNickname = function(nickname) {
+  var setNickname = function() {
+    nickname = $nickname.val();
+    if (nickname.length === 0) {
+      showError("Empty nickname is not valid.");
+      return false;
+    }
     socket.emit('set_nickname', nickname, function(is_available) {
       if (is_available) {
-	console.log('Nickname ' + nickname + ' is available');
+        console.log('Nickname ' + nickname + ' is available');
         my_nickname = nickname;
         $my_nickname.text(my_nickname);
-	setUpRoom();
+        setUpRoom();
       } else {
-	$error_paragraph.text("Not available. Choose another");
+        showError("Not available. Choose another.");
       }
     });
+    return false;
+  };
+
+  var showError = function(error) {
+    $error.show();
+    $error.text(error);
   };
     
   var setUpRoom = function() {
     socket.emit('get_users', function(users) {
-      console.log("Received " + users)
+      console.log("Received " + users);
       $login.hide();
       for (var client in users) {
         console.log(users[client]);
         appendNick(users[client]);
       }
       $room.show();
-      setKeyListener($chat_with, connectWith); 
     }); 
   };	
   
@@ -144,10 +156,16 @@ $(document).ready(function() {
   };
 
   var appendNick = function(nickname) {
+    console.log("Trying to append: " +nickname);
     if (nickname !== my_nickname) {
-      $users.append($("<li>@" + nickname + "</li>"));
+      var $link = $('<a href="#" class="list-group-item"></a>');
+      $link.text(nickname);
+      $link.click(function() {
+        connectWith(nickname);
+      });
+      $users.append($link);
     }
-  }
+  };
 
   var appendMessage = function(nickname, message) {
     $messages.append("<li>"+ nickname + ": " + message + "</li>");
