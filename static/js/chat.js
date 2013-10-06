@@ -17,9 +17,9 @@ $(document).ready(function() {
       $connect = $('#connect'),
       $request = $('#request'),
       $button_accept = $('#accept'),
-      $button_deny = $('#deny')
+      $button_deny = $('#deny'),
       socket = io.connect('/'),
-      other_nickname = undefined;,
+      other_nickname = undefined,
       my_nickname = undefined;
 
   $room.hide();
@@ -96,8 +96,8 @@ $(document).ready(function() {
         appendNick(users[client]);
       }
       $room.show();
-    }); 
-  };	
+    });
+  };
   
   var connectionRequest = function(other_nickname, callback) {
     $room.hide();
@@ -109,12 +109,13 @@ $(document).ready(function() {
       $request.hide();
       setChatWithOther(other_nickname);
     });
-			  
+    
     $button_deny.click( function () {
       callback(false);
       $request.hide();
       setUpRoom();
     });
+    return false;
   };
 
   var connectWith = function(other_nickname) {
