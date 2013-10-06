@@ -95,7 +95,7 @@ $(document).ready(function() {
     $error.text(error);
   };
     
-  var setUpRoom = function(nickname) {
+  var setUpRoom = function() {
     $room_heading.text("Chat room - Logged as: " + nickname);
     socket.emit('get_users', function(users) {
       console.log("Received " + users);
@@ -103,6 +103,7 @@ $(document).ready(function() {
       if (users.length < 2) {
         $no_users_alert.show();
       } else {
+        clearNickList();
         for (var client in users) {
           console.log(users[client]);
           appendNick(users[client]);
@@ -174,6 +175,10 @@ $(document).ready(function() {
         console.error("Message could not be sent");
       }
     });
+  };
+
+  var clearNickList = function() {
+    $users.empty();
   };
 
   var appendNick = function(nickname) {
