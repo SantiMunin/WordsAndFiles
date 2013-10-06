@@ -3,27 +3,26 @@ extends layout
 block content
 
     div.vertical-centering.horizontal-centering#login
-        form#login-form
-            div#login-error.alert.alert-danger.clear
-            label Nickname
-            input.form-control#nickname
-            button.btn.btn-success#signin Sign In
+      form#login-form
+        div#login-error.alert.alert-danger.clear
+        label Nickname
+        input.form-control#nickname
+        button.btn.btn-success#signin Sign In
 
     div.horizontal-centering#room
-            h1#room_heading
-            div.list-group#users
-            div.alert.alert-warning#no-users-alert You are alone. Maybe wait for a while?
+      h1#room_heading
+      div.list-group#users
+      div.alert.alert-warning#no-users-alert You are alone. Maybe wait for a while?
             
     div#request
-        h1 Do you want to connect with 
-        h1#other_nickname?
-        button.btn.btn-success#accept Yes 
-        button.btn.btn-danger#deny No
+      h1 Do you want to connect with 
+      h1#other_nickname?
+      button.btn.btn-success#button_accept Yes 
+      button.btn.btn-danger#button_deny No
         
-
     div#conversation
-        p#other_user
-            ol#messages
-            p New message
-                      input#new_message
-    
+      p#other_user
+        ol#messages
+        p New message
+          input#new_message
+      button.btn.btn-success#button_leave_conversation Leave

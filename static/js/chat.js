@@ -16,11 +16,12 @@ $(document).ready(function() {
       $other_nickname = $('#other_nickname'),
       $connect = $('#connect'),
       $request = $('#request'),
-      $button_accept = $('#accept'),
-      $button_deny = $('#deny'),
+      $button_accept = $('#button_accept'),
+      $button_deny = $('#button_deny'),
       $no_users_alert = $('#no-users-alert'),
+      $button_leave_conv = $('#button_leave_conversation'),
       socket = io.connect('/'),
-      other_nickname = undefined,
+      partner_nickname = undefined,
       my_nickname = undefined;
 
   $room.hide();
@@ -37,7 +38,7 @@ $(document).ready(function() {
   });
 
   socket.on('new_message', function(message) {
-    appendMessage(other_nickname, message);
+    appendMessage(partner_nickname, message);
   });
 
   socket.on('new_user', function(origin, new_nickname) {
@@ -46,7 +47,13 @@ $(document).ready(function() {
       appendNick(new_nickname);
     }
   });
-
+  
+  socket.on('exit_conversation_request', function () {
+    console.log("Disconnecting from conversation");
+    $conversation.hide();
+    setUpRoom();
+  });
+  
   socket.on('disconnected_user', function(nickname) {
     console.log(nickname + "disconnected.");
   });
@@ -134,16 +141,23 @@ $(document).ready(function() {
     });
   };
 
-  var setChatWithOther = function (nickname) {
+  var setChatWithOther = function (other_nickname) {
     $room.hide();
-    $other_user.text(nickname);
+    $other_user.text(other_nickname);
+    partner_nickname = other_nickname;
     $conversation.show();
     setKeyListener($message, sendMessageToOther);
-    other_nickname = nickname;
+    
+    $button_leave_conv.click ( function () {
+      socket.emit('exit_conversation', nickname);
+      $conversation.hide();
+      partner_nickname = undefined;
+      setUpRoom();
+    });
   };
 
   var sendMessageToOther = function(message) {
-    if (other_nickname === undefined) {
+    if (partner_nickname === undefined) {
       console.error("You are not talking with other");
       return;
     }

@@ -31,7 +31,6 @@ module.exports = function(io) {
 	      other_socket = findSocket(target);
 	      other_socket.emit('connection_request', source, function (ok) {
 		if (ok) {
-		  console.log("cannection succesfull between " + source + " - " + target);
 		  people[source] = target;
                   people[target] = source;
 		  callback(true);
@@ -50,6 +49,16 @@ module.exports = function(io) {
 	    sendMessage(socket.nickname, message);
 	  });
 	  
+	  socket.on('exit_conversation', function (nickname) {
+	    var other_nickname = people[nickname];
+	    var other_socket = findSocket(other_nickname);
+	    other_socket.emit('exit_conversation_request');
+	    console.log("Disconnection between " + nickname + " and " + other_nickname);
+	    people[people[nickname]] = "";
+	    people[nickname] = "";
+	    
+	  });
+
 	  socket.on('disconnect', function() {
 	    people[socket.nickname] = undefined;
 	    sendMessage('disconnected_user', 'SERVER', socket.nickname);
