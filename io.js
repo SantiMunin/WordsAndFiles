@@ -53,6 +53,15 @@ module.exports = function(io) {
      log_user_out(socket.nickname);
     });
 
+    socket.on('exit_conversation', function (nickname) {
+      var other_nickname = people[nickname];
+      var other_socket = findSocket(other_nickname);
+      other_socket.emit('exit_conversation_request');
+      console.log("Disconnection between " + nickname + " and " + other_nickname);
+      people[people[nickname]] = "";
+      people[nickname] = "";
+    });
+
     socket.on('log_me_out', function() {
      log_user_out(socket.nickname);
     });
