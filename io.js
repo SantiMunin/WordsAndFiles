@@ -65,7 +65,6 @@ module.exports = function(io) {
     socket.on('log_me_out', function() {
      log_user_out(socket.nickname);
     });
-
   });
 
   var sendMessage = function(subject, nickname, message) {
