@@ -1,8 +1,11 @@
 $(document).ready(function() {
-	
+  
   var $login = $("#login"),
       $nickname = $("#nickname"),
-		  $room = $("#room"),
+      $nickname_button = $("#signin"),
+      $login_form = $("#login-form"),
+      $error = $("#login-error");
+      $room = $("#room"),
       $conversation = $('#conversation'),
       $users = $('#users'),
       $chat_with = $('#chat_with'),
@@ -11,13 +14,13 @@ $(document).ready(function() {
       $message = $('#new_message'),
       $my_nickname = $('#my_nickname'),
       $error_paragraph = $('#error'),
-	    socket = io.connect('/'),
-      other_nickname,
-      my_nickname;
+      socket = io.connect('/'),
+      other_nickname = undefined,
+      my_nickname = undefined;
 
   $room.hide();
   $conversation.hide();
-	
+  
   socket.on('connect', function() {
     console.log('Connected with socket');
     init();
@@ -40,7 +43,7 @@ $(document).ready(function() {
   socket.on('disconnected_user', function(nickname) {
     console.log(nickname + "disconnected.");
   });
-	
+  
   var setKeyListener = function(element, callback) {
     element.keyup(function(e) {
       var code = e.which || e.keyCode;
@@ -52,34 +55,45 @@ $(document).ready(function() {
   };
 
   var init = function() {
-    setKeyListener($nickname, setNickname);
+    $login_form.submit(setNickname);
   };
   
-  var setNickname = function(nickname) {
+  var setNickname = function() {
+    nickname = $nickname.val();
+    if (nickname.length === 0) {
+      showError("Empty nickname is not valid.");
+      return false;
+    }
     socket.emit('set_nickname', nickname, function(is_available) {
       if (is_available) {
-	console.log('Nickname ' + nickname + ' is available');
+        console.log('Nickname ' + nickname + ' is available');
         my_nickname = nickname;
         $my_nickname.text(my_nickname);
-	setUpRoom();
+        setUpRoom();
       } else {
-	$error_paragraph.text("Not available. Choose another");
+        $error_paragraph.text("Not available. Choose another");
       }
     });
+    return false;
+  };
+
+  var showError = function(error) {
+    $error.show();
+    $error.text(error);
   };
     
   var setUpRoom = function() {
     socket.emit('get_users', function(users) {
-      console.log("Received " + users)
+      console.log("Received " + users);
       $login.hide();
       for (var client in users) {
         console.log(users[client]);
         appendNick(users[client]);
       }
       $room.show();
-      setKeyListener($chat_with, connectWith); 
-    }); 
-	};	
+      setKeyListener($chat_with, connectWith);
+    });
+  };
 
   var connectWith = function(other_nickname) {
     socket.emit('connect_me_with', my_nickname, other_nickname, function(ok) {
