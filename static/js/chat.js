@@ -157,9 +157,10 @@ $(document).ready(function() {
   var setChatWithOther = function (other_nickname) {
     $room.hide();
     current_window = $conversation;
-    $other_user.text(other_nickname);
+    $other_user.text("Chatting with: " + other_nickname);
     partner_nickname = other_nickname;
     $conversation.show();
+    $button_leave_conv.show();
     setKeyListener($message, sendMessageToOther);
     
     $button_leave_conv.click ( function () {
