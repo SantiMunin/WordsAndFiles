@@ -15,13 +15,13 @@ module.exports = function (io) {
     socket.on('login', function(nickname, callback) {
       if (login(nickname, callback)) {
         socket.nickname = nickname;
-        sendMessage('user_add', 'SERVER', nickname);
+        sendMessage('user_add', nickname);
       }
     });
 
-    socket.on('log_out', function () {
+    socket.on('logout', function () {
       log_user_out(socket.nickname);
-      sendMessage('user_left', 'SERVER', nickname);
+      sendMessage('user_left', nickname);
     });
 
     // CHAT FUNCTIONS
@@ -42,8 +42,8 @@ module.exports = function (io) {
   /**
    * Broadcasts a message.
    */
-  var sendMessage = function (subject, nickname, message) {
-    io.sockets.emit(subject, nickname, message);
+  var sendMessage = function (subject, message) {
+    io.sockets.emit(subject, message);
   };
 
   /**
