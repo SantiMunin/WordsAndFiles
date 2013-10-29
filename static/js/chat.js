@@ -211,12 +211,12 @@ $(document).ready(function() {
   };
   var setNickList = function(user_list){
     clearNickList();
-    if (user_lists.length < 2) {
-      $no_user_lists_alert.show();
+    if (user_list.length < 2) {
+      $no_users_alert.show();
     } else {
-      for (var client in user_lists) {
-        console.log(user_lists[client]);
-        appendNick(user_lists[client]);
+      for (var client in user_list) {
+        console.log(user_list[client]);
+        appendNick(user_list[client]);
       }
     }
   };
