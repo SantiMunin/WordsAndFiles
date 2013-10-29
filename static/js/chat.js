@@ -36,7 +36,7 @@ $(document).ready(function() {
     init();
   });
 
-  socket.on('connection_request', function(other_nickname, callback) {
+  socket.on('request_from', function(other_nickname, callback) {
     connectionRequest(other_nickname, callback);
   });
 
@@ -44,19 +44,19 @@ $(document).ready(function() {
     appendMessage(partner_nickname, message);
   });
 
-  socket.on('new_user', function(origin, new_nickname) {
+  socket.on('user_add', function(origin, new_nickname) {
     if (origin === 'SERVER') {
       $no_users_alert.hide();
       appendNick(new_nickname);
     }
   });
 
-  socket.on('disconnected_user', function(orogin, nickname) {
+  socket.on('user_left', function(orogin, nickname) {
     console.log(nickname + " disconnected.");
     removeNick(nickname);
   });
   
-  socket.on('exit_conversation_request', function () {
+  socket.on('user_left_chat', function () {
     console.log("Disconnecting from conversation");
     $conversation.hide();
     setUpRoom();
@@ -84,45 +84,25 @@ $(document).ready(function() {
       showError("Empty nickname is not valid.");
       return false;
     }
-    socket.emit('set_nickname', nickname, function(is_available) {
-      if (is_available) {
-        console.log('Nickname ' + nickname + ' is available');
+    socket.emit('login', nickname, function(err, succ, user_list) {
+      if (succ) {
+	console.log('Nickname ' + nickname + ' is available');
         my_nickname = nickname;
-        setUpRoom(nickname);
-        $log_out_button.show();
+        setNickList(user_list);
+	setUpRoom();
+	$log_out_button.show();
       } else {
-        showError("Not available. Choose another.");
+	  showError("Error: " + err);
       }
     });
     return false;
   };
-
-  var showError = function(error) {
-    $error.show();
-    $error.text(error);
-  };
-
-  var clearError = function() {
-    $error.hide();
-  };
-    
+ 
   var setUpRoom = function() {
     $room_heading.text("Chat room - Logged as: " + nickname);
-    socket.emit('get_users', function(users) {
-      console.log("Received " + users);
-      $login.hide();
-      current_window = $room;
-      clearNickList();
-      if (users.length < 2) {
-        $no_users_alert.show();
-      } else {
-        for (var client in users) {
-          console.log(users[client]);
-          appendNick(users[client]);
-        }
-      }
-      $room.show();
-    });
+    $login.hide();
+    current_window = $room;
+    $room.show();
   };
   
   var connectionRequest = function(other_nickname, callback) {
@@ -133,7 +113,8 @@ $(document).ready(function() {
     $button_accept.click( function () {
       callback(true);
       $request.hide();
-      setChatWithOther(other_nickname);
+      partner_nickname = other_nickname;
+      setChat();
     });
 
     $button_deny.click( function () {
@@ -145,33 +126,33 @@ $(document).ready(function() {
   };
 
   var connectWith = function(other_nickname) {
-    socket.emit('connect_me_with', my_nickname, other_nickname, function(ok) {
-      if(ok) {
-        setChatWithOther(other_nickname);
+    socket.emit('request_chat', my_nickname, other_nickname, function(err, succ) {
+      if(succ) {
+        partner_nickname = other_nickname;
+	setChat();
       } else {
-        console.error("Not possible.");
+	console.error("Not possible. Error: " + err);
       }
     });
   };
 
-  var setChatWithOther = function (other_nickname) {
+  var setChat = function () {
+    $other_user.text("Chatting with: " + other_nickname);
     $room.hide();
     current_window = $conversation;
-    $other_user.text("Chatting with: " + other_nickname);
-    partner_nickname = other_nickname;
+    $other_user.text(partner_nickname);
     $conversation.show();
-    $button_leave_conv.show();
-    setKeyListener($message, sendMessageToOther);
+    setKeyListener($message, sendMessage);
     
     $button_leave_conv.click ( function () {
-      socket.emit('exit_conversation', nickname);
+      socket.emit('leave_chat', nickname);
       $conversation.hide();
       partner_nickname = undefined;
       setUpRoom();
     });
   };
 
-  var sendMessageToOther = function(message) {
+  var sendMessage = function(message) {
     if (partner_nickname === undefined) {
       console.error("You are not talking with other");
       return;
@@ -181,7 +162,7 @@ $(document).ready(function() {
       console.error("Empty message, really?");
     }
 
-    socket.emit('send_message_to', my_nickname, message, function(ok) {
+    socket.emit('send_message', my_nickname, message, function(ok) {
       if (ok) {
         appendMessage(my_nickname, message);
         $message.val("");
@@ -190,7 +171,16 @@ $(document).ready(function() {
       }
     });
   };
+  
+  var showError = function(error) {
+    $error.show();
+    $error.text(error);
+  };
 
+  var clearError = function() {
+    $error.hide();
+  };
+  
   var clearNickList = function() {
     $users.empty();
   };
@@ -219,13 +209,24 @@ $(document).ready(function() {
       }
     }
   };
+  var setNickList = function(user_list){
+    clearNickList();
+    if (user_list.length < 2) {
+      $no_users_alert.show();
+    } else {
+      for (var client in user_list) {
+        console.log(user_list[client]);
+        appendNick(user_list[client]);
+      }
+    }
+  };
 
   var appendMessage = function(nickname, message) {
     $messages.append("<li>"+ nickname + ": " + message + "</li>");
   };
 
   var logout = function() {
-    socket.emit('log_me_out');
+    socket.emit('logout');
     current_window.hide();
     current_window = $login;
     $log_out_button.hide();
