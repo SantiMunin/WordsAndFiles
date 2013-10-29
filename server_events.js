@@ -1,28 +1,35 @@
-module.exports = function(io) {
+/**
+ * This module receives the 'io' object from socket.io and
+ * defines all the events that a server can receive and process.
+ * @param io
+ */
+module.exports = function (io) {
 
-   // SERVER INTERFACE
-  io.sockets.on('connection', function(socket) {
+  /**
+   * Server interface. List of the events that the server can process.
+   */
+  io.sockets.on('connection', function (socket) {
     console.log('Client connected');
 
     // LOGIN FUNCTIONS
-    socket.on('login', function(nickname, callback) {
+    socket.on('login', function (nickname, callback) {
       if (login(socket, nickname, callback)) {
         socket.nickname = nickname;
         sendMessage('user_add', 'SERVER', nickname);
       }
     });
 
-    socket.on('log_me_out', function() {
+    socket.on('log_me_out', function () {
       log_user_out(socket.nickname);
       sendMessage('user_left', 'SERVER', nickname);
     });
 
     // CHAT FUNCTIONS
-    socket.on('request_chat', function(source, target, callback) {
+    socket.on('request_chat', function (source, target, callback) {
       request_chat(source, target, callback);
     });
 
-    socket.on('send_message_to', function(nickname, message, callback) {
+    socket.on('send_message_to', function (nickname, message, callback) {
       callback(sendMessageToOther(nickname, message));
     });
 
@@ -32,28 +39,44 @@ module.exports = function(io) {
   });
 
   // COMMUNICATION FUNCTIONS
-  var sendMessage = function(subject, nickname, message) {
+  /**
+   * Broadcasts a message.
+   */
+  var sendMessage = function (subject, nickname, message) {
     io.sockets.emit(subject, nickname, message);
   };
-  
-  var sendMessageToOther = function(nickname, message) {
+
+  /**
+   * Send a message from one user to another.
+   * @returns false if the message is empty or the user is not chatting.
+   */
+  var sendMessageToOther = function (nickname, message) {
     if (message !== "") {
-        console.log("Sending message: " + message + " to " + people[nickname]);
-        var other_socket = findSocket(people[nickname]);
-        if (other_socket !== undefined) {
-          console.log("other_socket" + other_socket);
-          other_socket.emit('new_message', message);
-          return true;
-        }
+      console.log("Sending message: " + message + " to " + people[nickname]);
+      var other_socket = findSocket(people[nickname]);
+      if (other_socket !== undefined) {
+        console.log("other_socket" + other_socket);
+        other_socket.emit('new_message', message);
+        return true;
+      } else {
+        return false;
+      }
     }
     return false;
   };
 
 
   // SERVER LOGIC
+
+  /**
+   * Maps users with other users.
+   */
   var people = {};
 
-  login = function(nickname, callback) {
+  /**
+   * If the nickname is not used, it logs the user in.
+   */
+  login = function (nickname, callback) {
     console.log('Trying to set nickname ' + nickname);
     var nickAvailable = isNicknameAvailable(nickname);
 
@@ -67,16 +90,22 @@ module.exports = function(io) {
     return nickAvailable;
   };
 
-  log_user_out = function(nickname) {
-    console.log("Logging "+nickname+" out");
+  /**
+   * Removes the user from the users list.
+   */
+  log_user_out = function (nickname) {
+    console.log("Logging " + nickname + " out");
     people[nickname] = undefined;
   };
 
-  request_chat = function(source, target, callback) {
+  /**
+   * Redirects a chat request to its target. It redirects the answer as well.
+   */
+  request_chat = function (source, target, callback) {
     var status = check_chat_request();
     var target_socket;
     if (!status.valid) {
-      callback(status.err, false);
+      callback(status.error, false);
     } else {
       target_socket = findSocket(target);
       target_socket.emit('request_from', source, function (ok) {
@@ -91,7 +120,10 @@ module.exports = function(io) {
     }
   };
 
-  leave_chat = function(nickname) {
+  /**
+   * Leaves the conversation.
+   */
+  leave_chat = function (nickname) {
     var other_nickname = people[nickname];
     if (other_nickname && other_nickname !== "") {
       var other_socket = findSocket(other_nickname);
@@ -101,7 +133,7 @@ module.exports = function(io) {
     }
   };
 
-  var check_chat_request = function(source, target) {
+  var check_chat_request = function (source, target) {
     if (!isNicknameAvailable(source)) {
       return { valid: false, error: "We don't recognize your nick" };
     }
@@ -116,19 +148,19 @@ module.exports = function(io) {
     return { valid: true };
   };
 
-  var set_chat = function(source, target) {
+  var set_chat = function (source, target) {
     people[source] = target;
     people[target] = source;
   };
 
-  var remove_chat = function(source) {
+  var remove_chat = function (source) {
     if (people[source]) {
       people[people[source]] = "";
       people[source] = "";
     }
   };
 
-  var isNicknameAvailable = function(nickname) {
+  var isNicknameAvailable = function (nickname) {
     return people[nickname] === undefined;
   };
 
@@ -142,8 +174,8 @@ module.exports = function(io) {
     return undefined;
   };
 
-  var getClients = function() {
-    console.log("clients? --> "+ people);
+  var getClients = function () {
+    console.log("clients? --> " + people);
     result = [];
     for (var person in people) {
       if (people.hasOwnProperty(person) && people[person] === "") {
