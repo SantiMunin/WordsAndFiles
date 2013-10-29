@@ -1,24 +1,26 @@
 module.exports = function(io) {
-  var server = require('./server_logic.js')(io);
+
+  require('./server_logic.js')(io);
+
   io.sockets.on('connection', function(socket) {
     console.log('Client connected');
 
 
     // LOGIN FUNCTIONS
     socket.on('login', function(nickname, callback) {
-      if (server.login(nickname, callback)) {
+      if (login(nickname, callback)) {
         sendMessage('new_user', 'SERVER', nickname);
       }
     });
 
     socket.on('log_me_out', function() {
-      server.log_user_out(socket.nickname);
+      log_user_out(socket.nickname);
       sendMessage('user_left', 'SERVER', nickname);
     });
 
     // CHAT FUNCTIONS
     socket.on('request_chat', function(source, target, callback) {
-      server.request_chat(source, target, callback);
+      request_chat(source, target, callback);
     });
 
     socket.on('send_message_to', function(nickname, message, callback) {
@@ -26,7 +28,7 @@ module.exports = function(io) {
     });
 
     socket.on('leave_chat', function (nickname) {
-      server.leave_chat(nickname);
+      leave_chat(nickname);
     });
   });
 
