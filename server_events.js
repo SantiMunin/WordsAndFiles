@@ -8,7 +8,7 @@ module.exports = function(io) {
     socket.on('login', function(nickname, callback) {
       if (login(nickname, callback)) {
         socket.nickname = nickname;
-        sendMessage('new_user', 'SERVER', nickname);
+        sendMessage('user_add', 'SERVER', nickname);
       }
     });
 
