@@ -44,16 +44,19 @@ $(document).ready(function() {
     appendMessage(partner_nickname, message);
   });
 
-  socket.on('user_add', function(origin, new_nickname) {
-    if (origin === 'SERVER') {
-      $no_users_alert.hide();
-      appendNick(new_nickname);
-    }
+  socket.on('user_add', function(new_nickname) {
+    $no_users_alert.hide();
+    appendNick(new_nickname);
   });
 
-  socket.on('user_left', function(orogin, nickname) {
+  socket.on('user_left', function(nickname) {
     console.log(nickname + " disconnected.");
     removeNick(nickname);
+    if (parter_nickname === nickname) {
+      $conversation.hide();
+      $messages.empty();
+      setUpRoom();
+    }
   });
   
   socket.on('user_left_chat', function () {
