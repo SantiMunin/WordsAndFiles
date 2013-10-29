@@ -52,7 +52,7 @@ $(document).ready(function() {
   socket.on('user_left', function(nickname) {
     console.log(nickname + " disconnected.");
     removeNick(nickname);
-    if (parter_nickname === nickname) {
+    if (partner_nickname === nickname) {
       $conversation.hide();
       $messages.empty();
       setUpRoom();
@@ -142,6 +142,7 @@ $(document).ready(function() {
   var setChat = function () {
     $other_user.text("Chatting with: " + other_nickname);
     $room.hide();
+    $button_leave_conv.show();
     current_window = $conversation;
     $other_user.text(partner_nickname);
     $conversation.show();
