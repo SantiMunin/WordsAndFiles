@@ -78,7 +78,7 @@ module.exports = function (io) {
    */
   login = function (nickname, callback) {
     console.log('Trying to set nickname ' + nickname);
-    var nickAvailable = isNicknameAvailable(nickname);
+    var nickAvailable = isFreeNickname(nickname);
 
     if (nickAvailable) {
       people[nickname] = "";
@@ -134,11 +134,11 @@ module.exports = function (io) {
   };
 
   var check_chat_request = function (source, target) {
-    if (!isNicknameAvailable(source)) {
+    if (isFreeNickname(source)) {
       return { valid: false, error: "We don't recognize your nick" };
     }
 
-    if (!isNicknameAvailable(target)) {
+    if (isFreeNickname(target)) {
       return { valid: false, error: "We don't recognize the target's nick" };
     }
 
@@ -160,7 +160,7 @@ module.exports = function (io) {
     }
   };
 
-  var isNicknameAvailable = function (nickname) {
+  var isFreeNickname = function (nickname) {
     return people[nickname] === undefined;
   };
 
