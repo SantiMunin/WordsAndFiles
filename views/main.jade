@@ -12,6 +12,7 @@ block content
     nav.navbar.navbar-default(role="navigation")
         a.navbar-brand Aw3someCh4t
         button.btn.btn-warning#log-out-button Log out
+        button.btn.btn-success#button_leave_conversation Leave
 
     div.horizontal-centering#room
       h1#room_heading
@@ -27,6 +28,4 @@ block content
     div#conversation
       p#other_user
         ol#messages
-        p New message
-          input#new_message
-      button.btn.btn-success#button_leave_conversation Leave
+        input(id='new_message',type='text',placeholder='Type Here')
