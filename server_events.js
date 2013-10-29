@@ -19,7 +19,7 @@ module.exports = function (io) {
       }
     });
 
-    socket.on('log_me_out', function () {
+    socket.on('log_out', function () {
       log_user_out(socket.nickname);
       sendMessage('user_left', 'SERVER', nickname);
     });
