@@ -229,11 +229,12 @@ $(document).ready(function() {
     $messages.append("<li>"+ nickname + ": " + message + "</li>");
   };
 
-  var logout = function() {
-    socket.emit('logout');
+  var logout = function( 
+    socket.emit('logout', function () {
     current_window.hide();
     current_window = $login;
     $log_out_button.hide();
     $login.show();
-  };
+    });
+  ){};
 });
