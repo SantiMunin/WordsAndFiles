@@ -12,8 +12,8 @@ module.exports = function (io) {
     console.log('Client connected');
 
     // LOGIN FUNCTIONS
-    socket.on('login', function (nickname, callback) {
-      if (login(socket, nickname, callback)) {
+    socket.on('login', function(nickname, callback) {
+      if (login(nickname, callback)) {
         socket.nickname = nickname;
         sendMessage('user_add', 'SERVER', nickname);
       }
@@ -82,9 +82,9 @@ module.exports = function (io) {
 
     if (nickAvailable) {
       people[nickname] = "";
-      callback(undefined, getClients());
+      callback(undefined, true, getClients());
     } else {
-      callback('username_not_available', getClients());
+      callback('username_not_available', false, getClients());
     }
 
     return nickAvailable;
