@@ -53,18 +53,24 @@ $(document).ready(function() {
     console.log(nickname + " disconnected.");
     removeNick(nickname);
     if (partner_nickname === nickname) {
-      $conversation.hide();
-      $messages.empty();
-      setUpRoom();
+      leaveChat();
     }
   });
   
   socket.on('user_left_chat', function () {
     console.log("Disconnecting from conversation");
-    $conversation.hide();
-    setUpRoom();
+    leaveChat();
   });
   
+  var leaveChat = function () {
+    $button_leave_conv.hide();
+    $conversation.hide();
+    $messages.empty();
+    partner_nickname = undefined;
+    setUpRoom();
+    
+
+  };
   var setKeyListener = function(element, callback) {
     element.keyup(function(e) {
       var code = e.which || e.keyCode;
@@ -209,9 +215,10 @@ $(document).ready(function() {
         if (user_links.length < 2) {
           $no_users_alert.show();
         }
-        return;
       }
     }
+    return;
+    
   };
   var setNickList = function(user_list){
     clearNickList();
@@ -229,12 +236,13 @@ $(document).ready(function() {
     $messages.append("<li>"+ nickname + ": " + message + "</li>");
   };
 
-  var logout = function( 
-    socket.emit('logout', function () {
+  var logout = function() { 
+    socket.emit('logout', function (ok) {
     current_window.hide();
     current_window = $login;
     $log_out_button.hide();
     $login.show();
-    });
-  ){};
+    console.log(ok);
+    })
+ }; 
 });
