@@ -29,7 +29,7 @@ module.exports = function (io) {
       request_chat(source, target, callback);
     });
 
-    socket.on('send_message_to', function (nickname, message, callback) {
+    socket.on('send_message', function (nickname, message, callback) {
       callback(sendMessageToOther(nickname, message));
     });
 
