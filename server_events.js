@@ -76,7 +76,7 @@ module.exports = function(io) {
     var status = check_chat_request();
     var target_socket;
     if (!status.valid) {
-      callback(status.err, false);
+      callback(status.error, false);
     } else {
       target_socket = findSocket(target);
       target_socket.emit('request_from', source, function (ok) {
