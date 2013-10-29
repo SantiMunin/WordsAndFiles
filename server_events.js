@@ -76,7 +76,7 @@ module.exports = function (io) {
   /**
    * If the nickname is not used, it logs the user in.
    */
-  login = function (nickname, callback) {
+  var login = function (nickname, callback) {
     console.log('Trying to set nickname ' + nickname);
     var nickAvailable = isFreeNickname(nickname);
 
@@ -93,15 +93,18 @@ module.exports = function (io) {
   /**
    * Removes the user from the users list.
    */
-  log_user_out = function (nickname) {
+  var log_user_out = function (nickname) {
     console.log("Logging " + nickname + " out");
+    if (people[nickname] && people[nickname] !== "") {
+      people[people[nickname]] = "";
+    }
     people[nickname] = undefined;
   };
 
   /**
    * Redirects a chat request to its target. It redirects the answer as well.
    */
-  request_chat = function (source, target, callback) {
+  var request_chat = function (source, target, callback) {
     var status = check_chat_request(source, target);
     var target_socket;
     if (!status.valid) {
@@ -123,7 +126,7 @@ module.exports = function (io) {
   /**
    * Leaves the conversation.
    */
-  leave_chat = function (nickname) {
+  var leave_chat = function (nickname) {
     var other_nickname = people[nickname];
     if (other_nickname && other_nickname !== "") {
       var other_socket = findSocket(other_nickname);
