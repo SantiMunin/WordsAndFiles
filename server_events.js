@@ -102,7 +102,7 @@ module.exports = function (io) {
    * Redirects a chat request to its target. It redirects the answer as well.
    */
   request_chat = function (source, target, callback) {
-    var status = check_chat_request();
+    var status = check_chat_request(source, target);
     var target_socket;
     if (!status.valid) {
       callback(status.error, false);
