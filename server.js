@@ -19,4 +19,4 @@ app.get('/', function(request, response) {
 
 server.listen(port);
 console.log("Server started on port %s", port);
-require('./io')(io);
+require('./server_events.js')(io);

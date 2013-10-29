@@ -137,6 +137,7 @@ $(document).ready(function() {
   };
 
   var setChat = function () {
+    $other_user.text("Chatting with: " + other_nickname);
     $room.hide();
     current_window = $conversation;
     $other_user.text(partner_nickname);
