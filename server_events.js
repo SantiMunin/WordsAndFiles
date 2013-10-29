@@ -21,7 +21,7 @@ module.exports = function (io) {
 
     socket.on('logout', function () {
       log_user_out(socket.nickname);
-      sendMessage('user_left', nickname);
+      sendMessage('user_left', socket.nickname);
     });
 
     // CHAT FUNCTIONS
