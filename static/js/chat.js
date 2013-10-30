@@ -44,8 +44,10 @@ $(document).ready(function() {
   });
 
   socket.on('user_add', function(new_nickname) {
-    $no_users_alert.hide();
-    appendNick(new_nickname);
+    if (new_nickname !== my_nickname) {
+      $no_users_alert.hide();
+      appendNick(new_nickname);
+    }
   });
 
   socket.on('user_left', function(nickname) {
@@ -104,6 +106,7 @@ $(document).ready(function() {
       } else {
 	  showError("Error: " + err);
       }
+      return false;
     });
     return false;
   };
@@ -157,9 +160,7 @@ $(document).ready(function() {
     
     $button_leave_conv.click ( function () {
       socket.emit('leave_chat', nickname);
-      $conversation.hide();
-      partner_nickname = undefined;
-      setUpRoom();
+      leaveChat();
     });
   };
 
