@@ -75,6 +75,10 @@
     height: 33px;
 }
 
+#conversation {
+    margin: 0 15%;
+}
+
 ::-webkit-scrollbar {
     width: 12px;
 }
