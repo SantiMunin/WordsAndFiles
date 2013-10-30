@@ -2,9 +2,8 @@ $(document).ready(function() {
   
   var $login = $('#login'),
       $nickname = $('#nickname'),
-      $nickname_button = $('#signin'),
       $login_form = $('#login-form'),
-      $error = $('#login-error');
+      $error = $('#login-error'),
       $room = $("#room"),
       $conversation = $('#conversation'),
       $users = $('#users'),
@@ -50,11 +49,13 @@ $(document).ready(function() {
   });
 
   socket.on('user_left', function(nickname) {
-    console.log(nickname + " disconnected.");
-    removeNick(nickname);
-    if (partner_nickname === nickname) {
-      leaveChat();
-    }
+    if (nickname !== my_nickname) {
+      console.log(nickname + " disconnected.");
+      removeNick(nickname);
+      if (partner_nickname === nickname) {
+        leaveChat();
+      }
+  }
   });
   
   socket.on('user_left_chat', function () {
@@ -209,17 +210,18 @@ $(document).ready(function() {
 
   var removeNick = function(nickname) {
     var user_links = $('a:contains("'+nickname+'")');
-    for (var i in user_links) {
-      if ($(user_links[i]).text() === nickname) {
-        $(user_links[i]).remove();
-        if (user_links.length < 2) {
-          $no_users_alert.show();
-        }
+    user_links.each(function(index, element) {
+      console.log("index -> " +index);
+      if ($(element).text() === nickname) {
+        $(element).remove();
       }
+    });
+
+    if (user_links.length < 2) {
+      $no_users_alert.show();
     }
-    return;
-    
   };
+
   var setNickList = function(user_list){
     clearNickList();
     if (user_list.length < 2) {
@@ -237,12 +239,12 @@ $(document).ready(function() {
   };
 
   var logout = function() { 
-    socket.emit('logout', function (ok) {
-    current_window.hide();
-    current_window = $login;
-    $log_out_button.hide();
-    $login.show();
-    console.log(ok);
-    })
- }; 
+    socket.emit('logout', function() {
+      current_window.hide();
+      current_window = $login;
+      $log_out_button.hide();
+      $login.show();
+      console.log(ok);
+    });
+  };
 });
