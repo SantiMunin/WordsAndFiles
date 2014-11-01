@@ -5,17 +5,14 @@ var express = require('express'),
   port = process.env.PORT || 5000,
   io = require('socket.io').listen(server);
 
-app.configure(function() {
-    app.set('view options', {
-	layout : false
+app.set('view options', { layout : false });
+
+app.use(express.static(__dirname + '/static'));
+
+app.route('/')
+    .get(function(request, response) {
+        response.render('main.jade');
     });
-    app.use(express.static(__dirname + '/static'));
-});
-
-app.get('/', function(request, response) {
-    response.render('main.jade');
-
-});
 
 server.listen(port);
 console.log("Server started on port %s", port);
