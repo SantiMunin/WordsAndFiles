@@ -9,4 +9,6 @@ It makes use of:
   + Jade
   + Twitter Bootstrap
 
-A lot to do.
+Screenshots
+--------------------
+![Index](http://i.gyazo.com/816e65020dcab38e83ca47329799f896.png)
