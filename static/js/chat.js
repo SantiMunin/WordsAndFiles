@@ -112,7 +112,7 @@ $(document).ready(function() {
   };
  
   var setUpRoom = function() {
-    $room_heading.text("Chat room - Logged as: " + nickname);
+    $room_heading.text(nickname);
     $login.hide();
     current_window = $room;
     $room.show();
